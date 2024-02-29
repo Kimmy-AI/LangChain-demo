@@ -1,3 +1,5 @@
+import os
+from getpass import getpass
 from langchain.tools.retriever import create_retriever_tool
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -10,7 +12,15 @@ from langchain.agents import create_openai_functions_agent
 from langchain.agents import AgentExecutor
 from langchain_core.messages import HumanMessage, AIMessage
 
-# fill your openai_api_key
+
+def _getpass(env_var: str):
+    if not os.environ.get(env_var):
+        os.environ[env_var] = getpass(f"{env_var}=")
+
+
+_getpass("TAVILY_API_KEY")
+_getpass("OPENAI_API_KEY")
+
 loader = WebBaseLoader("https://docs.smith.langchain.com")
 docs = loader.load()
 
@@ -25,7 +35,7 @@ retriever_tool = create_retriever_tool(
     "langsmith_search",
     "Search for information about LangSmith. For any questions about LangSmith, you must use this tool!",
 )
-search = TavilySearchResults(tavily_api_key="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")
+search = TavilySearchResults()
 tools = [retriever_tool, search]
 
 prompt = hub.pull("hwchase17/openai-functions-agent")

@@ -223,6 +223,7 @@ def parse(text: str) -> dict:
 # Will need a later version of langchain to pull
 # this image prompt template
 prompt = hub.pull("wfh/web-voyager")
+# Whether to change the baseurl, please base it on the actual situation.
 llm = ChatOpenAI(model="gpt-4-vision-preview", base_url="https://lonlie.plus7.plus/v1")
 agent = annotate | RunnablePassthrough.assign(
     prediction=format_descriptions | prompt | llm | StrOutputParser() | parse

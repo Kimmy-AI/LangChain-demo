@@ -1,6 +1,7 @@
 #!/usr/bin/env python
+import os
+from getpass import getpass
 from typing import List
-
 from fastapi import FastAPI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
@@ -17,6 +18,15 @@ from langchain.agents import AgentExecutor
 from langchain.pydantic_v1 import BaseModel, Field
 from langchain_core.messages import BaseMessage
 from langserve import add_routes
+
+
+def _getpass(env_var: str):
+    if not os.environ.get(env_var):
+        os.environ[env_var] = getpass(f"{env_var}=")
+
+
+_getpass("OPENAI_API_KEY")
+_getpass("TAVILY_API_KEY")
 
 # 1. Load Retriever
 loader = WebBaseLoader("https://docs.smith.langchain.com/overview")
@@ -46,15 +56,16 @@ agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 # 4. App definition
 app = FastAPI(
-  title="LangChain Server",
-  version="1.0",
-  description="A simple API server using LangChain's Runnable interfaces",
+    title="LangChain Server",
+    version="1.0",
+    description="A simple API server using LangChain's Runnable interfaces",
 )
 
 # 5. Adding chain route
 
 # We need to add these input/output schemas because the current AgentExecutor
 # is lacking in schemas.
+
 
 class Input(BaseModel):
     input: str
@@ -66,6 +77,7 @@ class Input(BaseModel):
 
 class Output(BaseModel):
     output: str
+
 
 add_routes(
     app,
