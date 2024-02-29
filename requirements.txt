@@ -1,0 +1,5 @@
+ai21==2.0.3
+playwright==1.41.2
+langchain-core==0.1.26
+langchain-openai==0.0.7
+langgraph==0.0.26
